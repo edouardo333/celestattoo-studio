@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useState } from "react";
 import { ZoomIn } from "lucide-react";
 import { tattoos } from "@/app/data/gallery";
+import { useScrollReveal } from "@/app/hooks/useScrollReveal";
 import GalleryLightbox from "./GalleryLightbox";
 
 const INITIAL_COUNT = 8;
@@ -28,48 +29,10 @@ function getOffsetClass(index: number) {
   return OFFSET_PATTERN[index % OFFSET_PATTERN.length];
 }
 
-function subscribeReducedMotion(callback: () => void) {
-  const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
-  mql.addEventListener("change", callback);
-  return () => mql.removeEventListener("change", callback);
-}
-function getReducedMotionSnapshot() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-function getReducedMotionServerSnapshot() {
-  return false;
-}
-
 export default function TattooPortfolio() {
   const [showAll, setShowAll] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const sectionRef = useRef<HTMLElement>(null);
-  const [visible, setVisible] = useState(false);
-  const reducedMotion = useSyncExternalStore(
-    subscribeReducedMotion,
-    getReducedMotionSnapshot,
-    getReducedMotionServerSnapshot
-  );
-  const isRevealed = reducedMotion || visible;
-
-  useEffect(() => {
-    if (reducedMotion) return;
-
-    const node = sectionRef.current;
-    if (!node) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [reducedMotion]);
+  const { ref: sectionRef, isRevealed, reducedMotion } = useScrollReveal<HTMLElement>();
 
   const reveal = () =>
     reducedMotion

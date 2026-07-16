@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Star, Quote } from "lucide-react";
+import { useScrollReveal } from "@/app/hooks/useScrollReveal";
 
 const REVEAL_STEP = 80;
 const CARDS_START_INDEX = 3;
@@ -32,46 +32,8 @@ const testimonials = [
   },
 ];
 
-function subscribeReducedMotion(callback: () => void) {
-  const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
-  mql.addEventListener("change", callback);
-  return () => mql.removeEventListener("change", callback);
-}
-function getReducedMotionSnapshot() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-function getReducedMotionServerSnapshot() {
-  return false;
-}
-
 export default function Testimonials() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const [visible, setVisible] = useState(false);
-  const reducedMotion = useSyncExternalStore(
-    subscribeReducedMotion,
-    getReducedMotionSnapshot,
-    getReducedMotionServerSnapshot
-  );
-  const isRevealed = reducedMotion || visible;
-
-  useEffect(() => {
-    if (reducedMotion) return;
-
-    const node = sectionRef.current;
-    if (!node) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [reducedMotion]);
+  const { ref: sectionRef, isRevealed, reducedMotion } = useScrollReveal<HTMLElement>();
 
   const reveal = () =>
     reducedMotion

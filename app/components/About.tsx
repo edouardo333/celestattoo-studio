@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef } from "react";
 import { Award, Sparkles, PenTool } from "lucide-react";
+import { useScrollReveal } from "@/app/hooks/useScrollReveal";
 
 const PARALLAX_MAX_PX = 12;
 
@@ -20,47 +21,9 @@ const aboutStats = [
 
 const REVEAL_STEP = 80;
 
-function subscribeReducedMotion(callback: () => void) {
-  const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
-  mql.addEventListener("change", callback);
-  return () => mql.removeEventListener("change", callback);
-}
-function getReducedMotionSnapshot() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-function getReducedMotionServerSnapshot() {
-  return false;
-}
-
 export default function About() {
-  const sectionRef = useRef<HTMLElement>(null);
+  const { ref: sectionRef, isRevealed, reducedMotion } = useScrollReveal<HTMLElement>();
   const photoRef = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  const reducedMotion = useSyncExternalStore(
-    subscribeReducedMotion,
-    getReducedMotionSnapshot,
-    getReducedMotionServerSnapshot
-  );
-  const isRevealed = reducedMotion || visible;
-
-  useEffect(() => {
-    if (reducedMotion) return;
-
-    const node = sectionRef.current;
-    if (!node) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.15 }
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [reducedMotion]);
 
   // Extremely subtle parallax: the portrait drifts a few px while the text
   // column stays put, giving a light sense of depth as the section scrolls by.
@@ -92,7 +55,7 @@ export default function About() {
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(frame);
     };
-  }, [reducedMotion]);
+  }, [reducedMotion, sectionRef]);
 
   const reveal = () =>
     reducedMotion

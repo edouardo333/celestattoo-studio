@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useState } from "react";
 import {
   Plus,
   Minus,
@@ -12,6 +12,7 @@ import {
   Layers3,
   ShieldCheck,
 } from "lucide-react";
+import { useScrollReveal } from "@/app/hooks/useScrollReveal";
 import IconBadge from "./IconBadge";
 
 const REVEAL_STEP = 80;
@@ -69,47 +70,9 @@ const faqItems = [
   },
 ];
 
-function subscribeReducedMotion(callback: () => void) {
-  const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
-  mql.addEventListener("change", callback);
-  return () => mql.removeEventListener("change", callback);
-}
-function getReducedMotionSnapshot() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-function getReducedMotionServerSnapshot() {
-  return false;
-}
-
 export default function FAQ() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const [visible, setVisible] = useState(false);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const reducedMotion = useSyncExternalStore(
-    subscribeReducedMotion,
-    getReducedMotionSnapshot,
-    getReducedMotionServerSnapshot
-  );
-  const isRevealed = reducedMotion || visible;
-
-  useEffect(() => {
-    if (reducedMotion) return;
-
-    const node = sectionRef.current;
-    if (!node) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [reducedMotion]);
+  const { ref: sectionRef, isRevealed, reducedMotion } = useScrollReveal<HTMLElement>();
 
   const reveal = () =>
     reducedMotion
