@@ -41,6 +41,38 @@ export interface CoverUpPair {
 
 export const tattoos: TattooItem[] = [
   {
+    src: "/images/portfolio/5-tattoo-impressionant20.jpg",
+    alt: "Composition de tatouages réalistes, portraits et animaux, créations de Lucy Célestattoo",
+    title: "Portraits et réalisme",
+    category: "Tatouage personnalisé",
+    width: 2137,
+    height: 966,
+  },
+  {
+    src: "/images/portfolio/7-tattoo-impressionnant19.jpg",
+    alt: "Composition de tatouages réalistes inspirés de la nature et des animaux, créations de Lucy Célestattoo",
+    title: "Réalisme et nature",
+    category: "Tatouage personnalisé",
+    width: 2988,
+    height: 1403,
+  },
+  {
+    src: "/images/portfolio/tattoo-realisme-animalier22.jpg",
+    alt: "Tatouage réaliste d'un lion accompagné de roses et d'un scorpion",
+    title: "Lion et roses",
+    category: "Tatouage personnalisé",
+    width: 299,
+    height: 950,
+  },
+  {
+    src: "/images/portfolio/tattoo-realisme-animalier21.jpg",
+    alt: "Tatouages réalistes représentant un loup, un ours et un léopard, créations de Lucy Célestattoo",
+    title: "Faune sauvage",
+    category: "Tatouage personnalisé",
+    width: 527,
+    height: 947,
+  },
+  {
     src: "/images/portfolio/tattoo-lion-courrone01.jpg",
     alt: "Tatouage réaliste d'un lion couronné, création de Lucy Célestattoo",
     title: "Lion couronné",
